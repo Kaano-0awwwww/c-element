@@ -4,7 +4,7 @@ export type ButtonSize = 'small' | 'normal' | 'large'
 export interface ButtonProps {
   type?: ButtonType;
   size?: ButtonSize;
-  palin?: boolean;
+  plain?: boolean;
   round?: boolean;
   circle?: boolean;
   disabled?: boolean;
