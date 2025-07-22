@@ -51,7 +51,7 @@
   --vk-color-info-light-7: #dedfe0;
   --vk-color-info-light-8: #e9e9eb;
   --vk-color-info-light-9: #f4f4f5;
-  --vk-color-info-dark-2: #73767a;
+  --vk-color-info-dark-2: #73767a; */
 
   --vk-bg-color: #ffffff;
   --vk-bg-color-page: #f2f3f5;
@@ -73,7 +73,7 @@
   --vk-fill-color-extra-light: #fafcff;
   --vk-fill-color-dark: #ebedf0;
   --vk-fill-color-darker: #e6e8eb;
-  --vk-fill-color-blank: #ffffff; */
+  --vk-fill-color-blank: #ffffff;
 
   /* border */
   --vk-border-width: 1px;

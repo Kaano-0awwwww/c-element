@@ -2,6 +2,8 @@
 import Button from './components/Button/Button.vue';
 import { onMounted, ref } from 'vue';
 import type { ButtonInterface } from './components/Button/type';
+import Collapse from './components/Collapse/Collapse.vue';
+import Item from './components/Collapse/CollapseItem.vue';
 
 const buttonRef = ref<ButtonInterface | null>(null);
 onMounted(() => {
@@ -30,10 +32,24 @@ onMounted(() => {
     <Button size="large">Large</Button>
     <Button size="small">Small</Button>
   </main>
-  <h1>Hello</h1>
-  <h2>Hello</h2>
-  <h3>Hello</h3>
-  <a>link</a>
+
+  <div>
+    <Collapse>
+      <Item name="a" >
+        <template #title>
+          <h1>nice title</h1>
+        </template>
+        <h1>headline title</h1>
+        <div> this is content a aaa </div>
+      </Item>
+      <Item name="b" title="nice title b item b">
+        <div> this is bbbbb test </div>
+      </Item>
+      <Item name="c" title="nice cccc" disabled>
+        <div> this is cccc test </div>
+      </Item>
+    </Collapse>
+  </div>
 </template>
 
 <style scoped>
