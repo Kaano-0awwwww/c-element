@@ -1,6 +1,13 @@
 <script setup lang="ts">
 import HelloWorld from './components/HelloWorld.vue';
-import TheWelcome from './components/TheWelcome.vue';
+import Button from './components/Button/Button.vue';
+import { onMounted, ref } from 'vue';
+import type { ButtonInterface } from './components/Button/type';
+
+const buttonRef = ref<ButtonInterface | null>(null);
+onMounted(() => {
+  console.log('buttonRef', buttonRef.value?.ref); 
+});
 
 </script>
 
@@ -14,7 +21,7 @@ import TheWelcome from './components/TheWelcome.vue';
   </header>
 
   <main>
-    <TheWelcome />
+    <Button ref="buttonRef" type="primary">Test Button</Button>
   </main>
 </template>
 
