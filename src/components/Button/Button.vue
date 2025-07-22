@@ -19,3 +19,8 @@ defineExpose({
     <span><slot></slot></span>
   </button>
 </template> 
+<style>
+.vk-button{
+  background-color: var(--vk-color-primary);
+}
+</style>
