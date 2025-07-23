@@ -20,7 +20,4 @@ defineExpose({
   </button>
 </template> 
 <style>
-.vk-button{
-  background-color: var(--vk-color-primary);
-}
 </style>

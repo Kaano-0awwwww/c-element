@@ -10,6 +10,7 @@ onMounted(() => {
   console.log('buttonRef', buttonRef.value?.ref); 
 });
 
+const collapseVal = ref(['a']);
 </script>
 
 <template>
@@ -34,7 +35,7 @@ onMounted(() => {
   </main>
 
   <div>
-    <Collapse>
+    <Collapse v-model="collapseVal" according>
       <Item name="a" >
         <template #title>
           <h1>nice title</h1>
@@ -49,6 +50,7 @@ onMounted(() => {
         <div> this is cccc test </div>
       </Item>
     </Collapse>
+    {{ collapseVal }}
   </div>
 </template>
 
