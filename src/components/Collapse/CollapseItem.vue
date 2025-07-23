@@ -14,15 +14,43 @@ const handleClick = () => {
   if (props.disabled) return;
   collapseContext?.handleClick(props.name);
 };
+
+const transitionEvents: Record<string, (el: HTMLElement) => void> = {
+  beforeEnter: (el) => {
+    el.style.height = '0px';
+    el.style.overflow = 'hidden';
+  },
+  enter: (el) => {
+    el.style.height = `${el.scrollHeight}px`;
+    el.style.overflow = '';
+  },
+  afterEnter: (el) => {
+    el.style.height = '';
+  },
+  beforeLeave: (el) => {
+    el.style.height = `${el.scrollHeight}px`;
+  },
+  leave: (el) => {
+    el.style.height = '0px';
+    el.style.overflow = 'hidden';
+  },
+  afterLeave: (el) => {
+    el.style.height = '';
+    el.style.overflow = '';
+  }
+};
 </script>
 <template>
   <div class="vk-collapse-item" :class="{ 'is-disabled': disabled }">
     <div class="vk-collapse-item__header" :class="{ 'is-disabled': disabled, 'is-active': isActive }" :id="`item-header-${name}`" @click="handleClick">
       <slot name="title">{{ title }}</slot>
     </div>
-  <transition name="fade">
-    <div class="vk-collapse-item__content" :id="`item-content-${name}`" v-show="isActive">
-      <slot></slot>
+
+  <transition name="slide" v-on="transitionEvents">
+    <div class="vk-collapse-item__wrap" v-show="isActive">
+      <div class="vk-collapse-item__content" :id="`item-content-${name}`" >
+        <slot></slot>
+      </div>
     </div>
   </transition>
   </div>
