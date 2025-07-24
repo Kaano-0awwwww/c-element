@@ -4,6 +4,7 @@ import { onMounted, ref } from 'vue';
 import type { ButtonInterface } from './components/Button/type';
 import Collapse from './components/Collapse/Collapse.vue';
 import Item from './components/Collapse/CollapseItem.vue';
+import Icon from './components/Icons/icon.vue';
 
 const buttonRef = ref<ButtonInterface | null>(null);
 onMounted(() => {
@@ -15,6 +16,7 @@ const collapseVal = ref(['a']);
 
 <template>
   <main>
+    <Icon icon="arrow-up" size="2xl" type="primary" color="green"></Icon>
     <Button ref="buttonRef">Test Button</Button>
     <Button plain>Plain Button</Button>
     <Button round>Round Button</Button>
