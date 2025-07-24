@@ -12,7 +12,7 @@ const filterProps = computed(() => omit(props, ['type', 'color']));
 const customStyles = computed(() => props.color ? { color: props.color } : {});
 </script>
 <template>
-  <i class="vk-icon" :class="{[`vk-icon--${type}`]: type}" :style="customStyles">
+  <i class="vk-icon" :class="{[`vk-icon--${type}`]: type}" :style="customStyles" v-bind="$attrs">
     <font-awesome-icon v-bind="filterProps" />
   </i>
 </template>

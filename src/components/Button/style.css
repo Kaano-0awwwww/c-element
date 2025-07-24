@@ -78,6 +78,11 @@
     background-color: var(--vk-button-disabled-bg-color);
     border-color: var(--vk-button-disabled-border-color);
   }
+  /* [class*=vk-icon]：这是一个属性选择器，表示选择所有类名中包含“vk-icon”字符串的元素。这里的*=表示部分匹配，即只要类名中包含“vk-icon”即可。
++ span：这是一个相邻兄弟选择器，表示选择紧接在上述匹配元素之后的<span>元素。 */
+  [class*=vk-icon] + span {
+    margin-left: 6px;
+  }
 }
 @each $val in primary,success,warning,info,danger {
   .vk-button--$(val){

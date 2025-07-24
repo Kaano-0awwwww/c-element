@@ -4,7 +4,7 @@ import { onMounted, ref } from 'vue';
 import type { ButtonInterface } from './components/Button/type';
 import Collapse from './components/Collapse/Collapse.vue';
 import Item from './components/Collapse/CollapseItem.vue';
-import Icon from './components/Icons/icon.vue';
+import Icon from './components/Icons/Icon.vue';
 
 const buttonRef = ref<ButtonInterface | null>(null);
 onMounted(() => {
@@ -33,7 +33,10 @@ const collapseVal = ref(['a']);
     <Button type="warning" plain>Warning</Button>
     <Button type="danger" plain>Danger</Button><br/><br/>
     <Button size="large">Large</Button>
-    <Button size="small">Small</Button>
+    <Button size="small">Small</Button><br />
+
+    <Button size="small" icon="arrow-up">图标</Button><br />
+    <Button size="small" loading>图标</Button><br />
   </main>
 
   <div>
