@@ -5,6 +5,7 @@ import type { ButtonInterface } from './components/Button/type';
 import Collapse from './components/Collapse/Collapse.vue';
 import Item from './components/Collapse/CollapseItem.vue';
 import Icon from './components/Icons/Icon.vue';
+import Tooltip from '@/components/Tooltip/Tooltip.vue';
 
 const buttonRef = ref<ButtonInterface | null>(null);
 onMounted(() => {
@@ -15,6 +16,14 @@ const collapseVal = ref(['a']);
 </script>
 
 <template>
+  <header>
+    <Tooltip placement="bottom">
+      <Button type="primary">trigger it</Button>
+      <template #content>
+        <h1>Hello tooltip</h1>
+      </template>
+    </Tooltip>
+  </header>
   <main>
     <Icon icon="arrow-up" size="2xl" type="primary" color="green"></Icon>
     <Button ref="buttonRef">Test Button</Button>
