@@ -2,12 +2,14 @@
 import Button from './components/Button/Button.vue';
 import { onMounted, ref } from 'vue';
 import type { ButtonInterface } from './components/Button/type';
+import type { TooltipInstance } from './components/Tooltip/types';
 import Collapse from './components/Collapse/Collapse.vue';
 import Item from './components/Collapse/CollapseItem.vue';
 import Icon from './components/Icons/Icon.vue';
 import Tooltip from '@/components/Tooltip/Tooltip.vue';
 
 const buttonRef = ref<ButtonInterface | null>(null);
+const tooltipRef = ref<TooltipInstance | null>(null);
 onMounted(() => {
   console.log('buttonRef', buttonRef.value?.ref);
 });
@@ -17,7 +19,7 @@ const collapseVal = ref(['a']);
 
 <template>
   <header>
-    <Tooltip placement="bottom" trigger="click">
+    <Tooltip placement="bottom" manual ref="tooltipRef">
       <Button type="primary">trigger it</Button>
       <template #content>
         <h1>Hello tooltip</h1>
@@ -26,8 +28,8 @@ const collapseVal = ref(['a']);
   </header>
   <main>
     <Icon icon="arrow-up" size="2xl" type="primary" color="green"></Icon>
-    <Button ref="buttonRef">Test Button</Button>
-    <Button plain>Plain Button</Button>
+    <Button ref="buttonRef" @click="() => tooltipRef?.show()">Test Button</Button>
+    <Button plain @click="() => tooltipRef?.hide()">Plain Button</Button>
     <Button round>Round Button</Button>
     <Button circle>VK</Button>
     <Button disabled>Disabled Button</Button><br /><br />

@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import type { TooltipProps, TooltipEmits } from './types';
+import type { TooltipProps, TooltipEmits, TooltipInstance } from './types';
 import { createPopper } from '@popperjs/core';
 import type { Instance } from '@popperjs/core';
-import { ref, watch } from 'vue';
+import { onUnmounted, ref, watch } from 'vue';
 import useClickOutside from '@/hooks/useClickOutside';
 
 const props = withDefaults(defineProps<TooltipProps>(), {
@@ -38,12 +38,26 @@ const attachEvents = () => {
     outEvents.value['mouseleave'] = close;
   }
 };
-attachEvents();
+
+if (!props.manual) {
+  attachEvents();
+}
 useClickOutside(tooltipRef, () => {
-  if (props.trigger === 'click' && isOpen.value) {
+  if (props.trigger === 'click' && isOpen.value && !props.manual) {
     close();
   }
 });
+watch(
+  () => props.manual,
+  (isManual) => {
+    if (isManual) {
+      events.value = {};
+      outEvents.value = {};
+    } else {
+      attachEvents();
+    }
+  }
+);
 watch(
   () => props.trigger,
   (newVal, oldVal) => {
@@ -69,6 +83,11 @@ watch(
   },
   { flush: 'post' }
 );
+defineExpose<TooltipInstance>({
+  show: open,
+  hide: close,
+});
+onUnmounted(() => popperInstance?.destroy());
 </script>
 <template>
   <div class="vk-tooltip" v-on="outEvents" ref="tooltipRef">
