@@ -4,11 +4,14 @@ import { createPopper } from '@popperjs/core';
 import type { Instance } from '@popperjs/core';
 import { computed, onUnmounted, ref, watch } from 'vue';
 import useClickOutside from '@/hooks/useClickOutside';
+import { debounce } from 'lodash-es';
 
 const props = withDefaults(defineProps<TooltipProps>(), {
   placement: 'bottom',
   trigger: 'hover',
   transition: 'fade',
+  openDelay: 0,
+  closeDelay: 0,
 });
 const emits = defineEmits<TooltipEmits>();
 
@@ -22,13 +25,18 @@ const outEvents = ref<Record<string, any>>({});
 const popperOptions = computed(() => {
   return {
     placement: props.placement,
+    modifiers: [
+      {
+        name: 'offset',
+        options: {
+          offset: [0, 9],
+        },
+      },
+    ],
     ...props.popperOptions,
   };
 });
-const togglePopper = () => {
-  isOpen.value = !isOpen.value;
-  emits('visible-change', isOpen.value);
-};
+
 const open = () => {
   isOpen.value = true;
   emits('visible-change', true);
@@ -37,20 +45,34 @@ const close = () => {
   isOpen.value = false;
   emits('visible-change', false);
 };
+// 延时封装
+const debounceOpen = debounce(open, props.openDelay);
+const debounceClose = debounce(close, props.closeDelay);
+const show = () => {
+  debounceClose.cancel();
+  debounceOpen();
+};
+const hide = () => {
+  debounceOpen.cancel();
+  debounceClose();
+};
+const togglePopper = () => {
+  isOpen.value ? show() : hide();
+};
+
 const attachEvents = () => {
   if (props.trigger === 'click') events.value['click'] = togglePopper;
   if (props.trigger === 'hover') {
-    events.value['mouseenter'] = open;
-    outEvents.value['mouseleave'] = close;
+    events.value['mouseenter'] = show;
+    outEvents.value['mouseleave'] = hide;
   }
 };
-
 if (!props.manual) {
   attachEvents();
 }
 useClickOutside(tooltipRef, () => {
   if (props.trigger === 'click' && isOpen.value && !props.manual) {
-    close();
+    hide();
   }
 });
 watch(
@@ -88,8 +110,8 @@ watch(
   { flush: 'post' }
 );
 defineExpose<TooltipInstance>({
-  show: open,
-  hide: close,
+  show: show,
+  hide: hide,
 });
 onUnmounted(() => popperInstance?.destroy());
 </script>
@@ -104,6 +126,7 @@ onUnmounted(() => popperInstance?.destroy());
         <slot name="content">
           {{ content }}
         </slot>
+        <div id="arrow" data-popper-arrow></div>
       </div>
     </Transition>
   </div>
