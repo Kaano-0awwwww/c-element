@@ -9,7 +9,7 @@ import Tooltip from '@/components/Tooltip/Tooltip.vue';
 
 const buttonRef = ref<ButtonInterface | null>(null);
 onMounted(() => {
-  console.log('buttonRef', buttonRef.value?.ref); 
+  console.log('buttonRef', buttonRef.value?.ref);
 });
 
 const collapseVal = ref(['a']);
@@ -30,17 +30,17 @@ const collapseVal = ref(['a']);
     <Button plain>Plain Button</Button>
     <Button round>Round Button</Button>
     <Button circle>VK</Button>
-    <Button disabled>Disabled Button</Button><br/><br/>
+    <Button disabled>Disabled Button</Button><br /><br />
     <Button type="primary">Primary</Button>
     <Button type="success">Success</Button>
     <!-- <Button type="info">Info</Button> -->
     <Button type="warning">Warning</Button>
-    <Button type="danger">Danger</Button><br/><br/>
+    <Button type="danger">Danger</Button><br /><br />
     <Button type="primary" plain>Primary</Button>
     <Button type="success" plain>Success</Button>
     <!-- <Button type="info" plain>Info</Button> -->
     <Button type="warning" plain>Warning</Button>
-    <Button type="danger" plain>Danger</Button><br/><br/>
+    <Button type="danger" plain>Danger</Button><br /><br />
     <Button size="large">Large</Button>
     <Button size="small">Small</Button><br />
 
@@ -50,24 +50,22 @@ const collapseVal = ref(['a']);
 
   <div>
     <Collapse v-model="collapseVal" according>
-      <Item name="a" >
+      <Item name="a">
         <template #title>
           <h1>nice title</h1>
         </template>
         <h1>headline title</h1>
-        <div> this is content a aaa </div>
+        <div>this is content a aaa</div>
       </Item>
       <Item name="b" title="nice title b item b">
-        <div> this is bbbbb test </div>
+        <div>this is bbbbb test</div>
       </Item>
       <Item name="c" title="nice cccc" disabled>
-        <div> this is cccc test </div>
+        <div>this is cccc test</div>
       </Item>
     </Collapse>
     {{ collapseVal }}
   </div>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>
