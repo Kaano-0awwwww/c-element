@@ -17,7 +17,7 @@ const collapseVal = ref(['a']);
 
 <template>
   <header>
-    <Tooltip placement="bottom">
+    <Tooltip placement="bottom" trigger="click">
       <Button type="primary">trigger it</Button>
       <template #content>
         <h1>Hello tooltip</h1>
