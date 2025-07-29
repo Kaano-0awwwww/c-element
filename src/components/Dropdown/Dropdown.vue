@@ -4,18 +4,22 @@ import type { Ref } from 'vue';
 import type { DropdownProps, DropdownInstance, DropdownEmits, MenuOption } from './types';
 import Tooltip from '../Tooltip/Tooltip.vue';
 import type { TooltipInstance } from '../Tooltip/types';
+import RenderVnode from '../Common/RenderVnode';
 
-const props = defineProps<DropdownProps>();
+const props = withDefaults(defineProps<DropdownProps>(), {
+  hideAfterClick: true,
+});
 const emits = defineEmits<DropdownEmits>();
 const tooltipRef = ref() as Ref<TooltipInstance>;
+
 const visibleChange = (e: boolean) => {
   emits('visible-change', e);
 };
 const itemClick = (e: MenuOption) => {
-  if (e.disabled) {
-    return;
-  }
+  if (e.disabled) return;
+
   emits('select', e);
+  if (props.hideAfterClick) tooltipRef.value.hide();
 };
 defineExpose<DropdownInstance>({
   show: tooltipRef.value?.show,
@@ -44,7 +48,7 @@ defineExpose<DropdownInstance>({
               :class="{ 'is-disabled': item.disabled, 'is-divided': item.divided }"
               :id="`dropdown-item-${item.key}`"
             >
-              {{ item.label }}
+              <RenderVnode :v-node="item.label"></RenderVnode>
             </li>
           </template>
         </ul>
