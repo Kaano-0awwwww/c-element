@@ -1,35 +1,55 @@
 <script setup lang="ts">
+import { ref, onMounted, h } from 'vue';
+import type { Options } from '@popperjs/core';
+import Tooltip from './components/Tooltip/Tooltip.vue';
+import Dropdown from './components/Dropdown/Dropdown.vue';
+import type { MenuOption } from './components/Dropdown/types';
 import Button from './components/Button/Button.vue';
-import { onMounted, ref } from 'vue';
-import type { ButtonInterface } from './components/Button/type';
-import type { TooltipInstance } from './components/Tooltip/types';
 import Collapse from './components/Collapse/Collapse.vue';
 import Item from './components/Collapse/CollapseItem.vue';
 import Icon from './components/Icons/Icon.vue';
-import Tooltip from '@/components/Tooltip/Tooltip.vue';
-
+import type { ButtonInterface } from './components/Button/type';
+import type { TooltipInstance } from './components/Tooltip/types';
 const buttonRef = ref<ButtonInterface | null>(null);
 const tooltipRef = ref<TooltipInstance | null>(null);
+const openedValue = ref(['a']);
+const size = ref<any>('3x');
+const trigger = ref<any>('click');
+const options: MenuOption[] = [
+  { key: 1, label: h('b', 'this is bold') },
+  { key: 2, label: 'item2', disabled: true },
+  { key: 3, label: 'item3', divided: true },
+  { key: 4, label: 'item4' },
+];
+const open = () => {
+  tooltipRef.value?.show();
+};
+const close = () => {
+  tooltipRef.value?.hide();
+};
 onMounted(() => {
-  console.log('buttonRef', buttonRef.value?.ref);
+  if (buttonRef.value) {
+    console.log('buttonRef', buttonRef.value.ref);
+  }
+  setTimeout(() => {
+    openedValue.value = ['a', 'b'];
+    size.value = '2xl';
+    // trigger.value = 'hover'
+  }, 2000);
 });
-
-const collapseVal = ref(['a']);
 </script>
 
 <template>
   <header>
-    <Tooltip placement="bottom" ref="tooltipRef">
-      <Button type="primary">trigger it</Button>
-      <template #content>
-        <h1>Hello tooltip</h1>
-      </template>
-    </Tooltip>
+    <Dropdown placement="bottom" :trigger="trigger" :menu-options="options">
+      <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
+    </Dropdown>
   </header>
+
+  <Icon icon="arrow-up" :size="size" type="danger" color="#0e7a0d" />
   <main>
-    <Icon icon="arrow-up" size="2xl" type="primary" color="green"></Icon>
-    <Button ref="buttonRef" @click="() => tooltipRef?.show()">Test Button</Button>
-    <Button plain @click="() => tooltipRef?.hide()">Plain Button</Button>
+    <Button ref="buttonRef" @click="open">Test Button</Button>
+    <Button plain @click="close">Plain Button</Button>
     <Button round>Round Button</Button>
     <Button circle>VK</Button>
     <Button disabled>Disabled Button</Button><br /><br />
@@ -44,30 +64,50 @@ const collapseVal = ref(['a']);
     <Button type="warning" plain>Warning</Button>
     <Button type="danger" plain>Danger</Button><br /><br />
     <Button size="large">Large</Button>
-    <Button size="small">Small</Button><br />
+    <Button size="small">Small</Button><br /><br />
+    <Button size="large" loading>Loading</Button>
+    <Button size="large" icon="arrow-up">Icon</Button><br /><br />
 
-    <Button size="small" icon="arrow-up">图标</Button><br />
-    <Button size="small" loading>图标</Button><br />
-  </main>
-
-  <div>
-    <Collapse v-model="collapseVal" according>
-      <Item name="a">
-        <template #title>
-          <h1>nice title</h1>
-        </template>
+    <Collapse v-model="openedValue">
+      <Item name="a" title="Title A">
         <h1>headline title</h1>
         <div>this is content a aaa</div>
       </Item>
-      <Item name="b" title="nice title b item b">
+      <Item name="b" title="Title B">
         <div>this is bbbbb test</div>
       </Item>
-      <Item name="c" title="nice cccc" disabled>
+      <Item name="c" title="Disabled Title" disabled>
         <div>this is cccc test</div>
       </Item>
     </Collapse>
-    {{ collapseVal }}
-  </div>
+    {{ openedValue }}
+  </main>
 </template>
 
-<style scoped></style>
+<style>
+header {
+  line-height: 1.5;
+}
+
+.logo {
+  display: block;
+  border: 1px solid green;
+}
+.vk-tooltip__popper {
+  border: 1px solid red;
+}
+
+@media (min-width: 1024px) {
+  header {
+    display: flex;
+    place-items: center;
+    padding-right: calc(var(--section-gap) / 2);
+  }
+
+  header .wrapper {
+    display: flex;
+    place-items: flex-start;
+    flex-wrap: wrap;
+  }
+}
+</style>

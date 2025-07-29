@@ -57,7 +57,7 @@ const hide = () => {
   debounceClose();
 };
 const togglePopper = () => {
-  isOpen.value ? show() : hide();
+  isOpen.value ? hide() : show();
 };
 
 const attachEvents = () => {
