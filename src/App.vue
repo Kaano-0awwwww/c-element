@@ -10,6 +10,8 @@ import Item from './components/Collapse/CollapseItem.vue';
 import Icon from './components/Icons/Icon.vue';
 import type { ButtonInterface } from './components/Button/type';
 import type { TooltipInstance } from './components/Tooltip/types';
+import Message from './components/Message/Message.vue';
+
 const buttonRef = ref<ButtonInterface | null>(null);
 const tooltipRef = ref<TooltipInstance | null>(null);
 const openedValue = ref(['a']);
@@ -40,6 +42,7 @@ onMounted(() => {
 </script>
 
 <template>
+  <Message message="hello message" :duration="0" show-close />
   <header>
     <Dropdown placement="bottom" :trigger="trigger" :menu-options="options">
       <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
