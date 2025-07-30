@@ -11,6 +11,7 @@ import Icon from './components/Icons/Icon.vue';
 import type { ButtonInterface } from './components/Button/type';
 import type { TooltipInstance } from './components/Tooltip/types';
 import Message from './components/Message/Message.vue';
+import createMessage from './components/Message/render';
 
 const buttonRef = ref<ButtonInterface | null>(null);
 const tooltipRef = ref<TooltipInstance | null>(null);
@@ -30,6 +31,7 @@ const close = () => {
   tooltipRef.value?.hide();
 };
 onMounted(() => {
+  createMessage({ message: 'hello world', duration: 0 });
   if (buttonRef.value) {
     console.log('buttonRef', buttonRef.value.ref);
   }
@@ -42,7 +44,6 @@ onMounted(() => {
 </script>
 
 <template>
-  <Message message="hello message" :duration="0" show-close />
   <header>
     <Dropdown placement="bottom" :trigger="trigger" :menu-options="options">
       <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
