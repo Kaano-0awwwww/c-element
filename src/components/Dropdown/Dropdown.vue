@@ -22,8 +22,8 @@ const itemClick = (e: MenuOption) => {
   if (props.hideAfterClick) tooltipRef.value.hide();
 };
 defineExpose<DropdownInstance>({
-  show: tooltipRef.value?.show,
-  hide: tooltipRef.value?.hide,
+  show: () => tooltipRef.value?.show(),
+  hide: () => tooltipRef.value?.hide(),
 });
 </script>
 <template>
