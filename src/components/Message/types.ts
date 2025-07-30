@@ -1,5 +1,4 @@
 import type { VNode } from 'vue';
-
 export interface MessageProps {
   message?: string | VNode;
   duration?: number;
@@ -7,4 +6,9 @@ export interface MessageProps {
   type?: 'success' | 'info' | 'warning' | 'error';
   onDestory: () => void;
 }
-export type createMessageProps = Omit<MessageProps, 'onDestory'>;
+export interface MessageContext {
+  id: string;
+  vnode: VNode;
+  props: MessageProps;
+}
+export type CreateMessageProps = Omit<MessageProps, 'onDestory'>;

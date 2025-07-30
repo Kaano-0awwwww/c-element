@@ -1,11 +1,18 @@
 import { render, h } from 'vue';
+import type { CreateMessageProps, MessageContext } from './types';
 import MessageConstructor from './Message.vue';
-import type { createMessageProps } from './types';
 
-function createMessage(props: createMessageProps) {
+let seed = 1;
+const instances: MessageContext[] = [];
+
+export const createMessage = (props: CreateMessageProps) => {
+  const id = `message_${seed++}`;
   const container = document.createElement('div');
-  // 挂载卸载实例方法
   const destory = () => {
+    // 删除数组中的实例
+    const idx = instances.findIndex((instance) => instance.id === id);
+    if (idx === -1) return;
+    instances.splice(idx, 1);
     render(null, container);
   };
   const newProps = {
@@ -14,7 +21,17 @@ function createMessage(props: createMessageProps) {
   };
   const vnode = h(MessageConstructor, newProps);
   render(vnode, container);
+  //非空断言操作符
   document.body.appendChild(container.firstElementChild!);
-}
+  const instance = {
+    id,
+    vnode,
+    props: newProps,
+  };
+  instances.push(instance);
+  return instance;
+};
 
-export default createMessage;
+export const getLastInstance = () => {
+  return instances.at(-1);
+};

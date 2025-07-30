@@ -1,37 +1,12 @@
-<script lang="ts" setup>
-import type { MessageProps } from './types';
-import { ref, defineProps, onMounted, watch } from 'vue';
-import Icon from '../Icons/Icon.vue';
-import RenderVnode from '../Common/RenderVnode';
-
-const props = withDefaults(defineProps<MessageProps>(), {
-  duration: 2000,
-  type: 'info',
-});
-
-const visible = ref(false);
-
-onMounted(() => {
-  visible.value = true;
-  startTimer();
-});
-
-function startTimer() {
-  if (props.duration === 0) return;
-  setTimeout(() => {
-    visible.value = false;
-  }, props.duration);
-}
-watch(visible, (newVal) => {
-  if (!newVal) props.onDestory;
-});
-</script>
 <template>
   <div
     class="vk-message"
-    role="alert"
     v-show="visible"
-    :class="{ ['vk-message--${type}']: type, 'is-close': showClose }"
+    :class="{
+      [`vk-message--${type}`]: type,
+      'is-close': showClose,
+    }"
+    role="alert"
   >
     <div class="vk-message__content">
       <slot>
@@ -39,11 +14,40 @@ watch(visible, (newVal) => {
       </slot>
     </div>
     <div class="vk-message__close" v-if="showClose">
-      <Icon @click.stop="() => (visible = false)" icon="xmark" />
+      <Icon @click.stop="visible = false" icon="xmark" />
     </div>
   </div>
 </template>
-<style scoped>
+<script setup lang="ts">
+import { ref, onMounted, watch } from 'vue';
+import type { MessageProps } from './types';
+import RenderVnode from '../Common/RenderVnode';
+import Icon from '../Icons/Icon.vue';
+import { getLastInstance } from './render';
+const props = withDefaults(defineProps<MessageProps>(), {
+  type: 'info',
+  duration: 3000,
+});
+const visible = ref(false);
+const prevInstance = getLastInstance();
+console.log('prev', prevInstance);
+function startTimer() {
+  if (props.duration === 0) return;
+  setTimeout(() => {
+    visible.value = false;
+  }, props.duration);
+}
+onMounted(() => {
+  visible.value = true;
+  startTimer();
+});
+watch(visible, (newValue) => {
+  if (!newValue) {
+    props.onDestory();
+  }
+});
+</script>
+<style>
 .vk-message {
   width: max-content;
   position: fixed;

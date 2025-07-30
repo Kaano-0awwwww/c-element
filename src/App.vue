@@ -11,7 +11,7 @@ import Icon from './components/Icons/Icon.vue';
 import type { ButtonInterface } from './components/Button/type';
 import type { TooltipInstance } from './components/Tooltip/types';
 import Message from './components/Message/Message.vue';
-import createMessage from './components/Message/render';
+import { createMessage } from './components/Message/render';
 
 const buttonRef = ref<ButtonInterface | null>(null);
 const tooltipRef = ref<TooltipInstance | null>(null);
@@ -31,7 +31,8 @@ const close = () => {
   tooltipRef.value?.hide();
 };
 onMounted(() => {
-  createMessage({ message: 'hello world', duration: 2000, showClose: true });
+  createMessage({ message: 'hello world', duration: 0, showClose: true });
+  createMessage({ message: 'hello world again', duration: 0 });
   if (buttonRef.value) {
     console.log('buttonRef', buttonRef.value.ref);
   }
