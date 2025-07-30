@@ -31,7 +31,7 @@ const close = () => {
   tooltipRef.value?.hide();
 };
 onMounted(() => {
-  createMessage({ message: 'hello world', duration: 0 });
+  createMessage({ message: 'hello world', duration: 2000, showClose: true });
   if (buttonRef.value) {
     console.log('buttonRef', buttonRef.value.ref);
   }

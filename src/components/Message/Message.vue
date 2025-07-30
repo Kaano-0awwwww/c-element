@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { MessageProps } from './types';
-import { ref, defineProps, onMounted } from 'vue';
+import { ref, defineProps, onMounted, watch } from 'vue';
 import Icon from '../Icons/Icon.vue';
 import RenderVnode from '../Common/RenderVnode';
 
@@ -22,6 +22,9 @@ function startTimer() {
     visible.value = false;
   }, props.duration);
 }
+watch(visible, (newVal) => {
+  if (!newVal) props.onDestory;
+});
 </script>
 <template>
   <div
