@@ -10,6 +10,7 @@ const props = withDefaults(defineProps<MessageProps>(), {
   type: 'info',
   duration: 3000,
   offset: 20,
+  transitionName: 'fade-up',
 });
 const visible = ref(false);
 const prevInstance = getLastInstance();
@@ -27,6 +28,9 @@ const cssStyle = computed(() => ({
   top: topOffset.value + 'px',
   zIndex: props.zindex,
 }));
+function updateHeight() {
+  height.value = messageRef.value!.getBoundingClientRect().height;
+}
 // esc关闭组件
 useEventListener(document, 'keydown', (e: Event) => {
   const event = e as KeyboardEvent;
@@ -46,42 +50,44 @@ function clearTimer() {
 onMounted(async () => {
   visible.value = true;
   startTimer();
-  await nextTick(() => (height.value = messageRef.value!.getBoundingClientRect().height));
+  // await nextTick(() => (height.value = messageRef.value!.getBoundingClientRect().height));
 });
-watch(visible, (newValue) => {
-  if (!newValue) {
-    props.onDestory();
-  }
-});
+// watch(visible, (newValue) => {
+//   if (!newValue) {
+//     props.onDestory();
+//   }
+// });
 defineExpose({
   bottomOffset,
   visible,
 });
 </script>
 <template>
-  <div
-    class="vk-message"
-    v-show="visible"
-    :class="{
-      [`vk-message--${type}`]: type,
-      'is-close': showClose,
-    }"
-    role="alert"
-    ref="messageRef"
-    :style="cssStyle"
-    @mouseenter="clearTimer"
-    @mouseleave="startTimer"
-  >
-    <div class="vk-message__content">
-      <slot>
-        <!-- {{ offset }} - {{ topOffset }} - {{ height }} - {{ bottomOffset }} -->
-        <RenderVnode :vNode="message" v-if="message" />
-      </slot>
+  <Transition :name="transitionName" @after-leave="() => onDestory()" @enter="updateHeight">
+    <div
+      class="vk-message"
+      v-show="visible"
+      :class="{
+        [`vk-message--${type}`]: type,
+        'is-close': showClose,
+      }"
+      role="alert"
+      ref="messageRef"
+      :style="cssStyle"
+      @mouseenter="clearTimer"
+      @mouseleave="startTimer"
+    >
+      <div class="vk-message__content">
+        <slot>
+          <!-- {{ offset }} - {{ topOffset }} - {{ height }} - {{ bottomOffset }} -->
+          <RenderVnode :vNode="message" v-if="message" />
+        </slot>
+      </div>
+      <div class="vk-message__close" v-if="showClose">
+        <Icon @click.stop="visible = false" icon="xmark" />
+      </div>
     </div>
-    <div class="vk-message__close" v-if="showClose">
-      <Icon @click.stop="visible = false" icon="xmark" />
-    </div>
-  </div>
+  </Transition>
 </template>
 <style>
 .vk-message {

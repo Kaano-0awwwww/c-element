@@ -4,10 +4,11 @@ export interface MessageProps {
   message?: string | VNode;
   duration?: number;
   showClose?: boolean;
-  type?: 'success' | 'info' | 'warning' | 'error';
+  type?: 'success' | 'info' | 'warning' | 'danger';
   onDestory: () => void;
   offset?: number;
   zindex: number;
+  transitionName?: string;
 }
 export interface MessageContext {
   id: string;
