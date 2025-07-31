@@ -6,7 +6,7 @@ import useZIndex from '../../hooks/useZindex';
 let seed = 1;
 const instances: MessageContext[] = shallowReactive([]);
 
-export const createMessage = (props: CreateMessageProps) => {
+export function createMessage(props: CreateMessageProps) {
   const id = `message_${seed++}`;
   const { nextZindex } = useZIndex();
   const container = document.createElement('div');
@@ -42,7 +42,7 @@ export const createMessage = (props: CreateMessageProps) => {
   };
   instances.push(instance);
   return instance;
-};
+}
 
 export const getLastInstance = () => {
   return instances.at(-1);

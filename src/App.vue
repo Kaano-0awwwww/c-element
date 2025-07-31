@@ -32,7 +32,7 @@ const close = () => {
 };
 onMounted(() => {
   const messageInstance = createMessage({ message: 'hello world', duration: 0, showClose: true });
-  createMessage({ message: 'hello world again', duration: 0 });
+  createMessage({ message: 'hello world again', duration: 2000 });
   if (buttonRef.value) {
     console.log('buttonRef', buttonRef.value.ref);
   }

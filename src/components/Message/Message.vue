@@ -4,6 +4,7 @@ import type { MessageProps } from './types';
 import RenderVnode from '../Common/RenderVnode';
 import Icon from '../Icons/Icon.vue';
 import { getLastBottomOffset, getLastInstance } from './render';
+import useEventListener from '../../hooks/useEventListener';
 
 const props = withDefaults(defineProps<MessageProps>(), {
   type: 'info',
@@ -26,11 +27,21 @@ const cssStyle = computed(() => ({
   top: topOffset.value + 'px',
   zIndex: props.zindex,
 }));
+// esc关闭组件
+useEventListener(document, 'keydown', (e: Event) => {
+  const event = e as KeyboardEvent;
+  if (event.code === 'Escape') visible.value = false;
+});
+
+let timer: any = null;
 function startTimer() {
   if (props.duration === 0) return;
-  setTimeout(() => {
+  timer = setTimeout(() => {
     visible.value = false;
   }, props.duration);
+}
+function clearTimer() {
+  clearTimeout(timer);
 }
 onMounted(async () => {
   visible.value = true;
@@ -58,6 +69,8 @@ defineExpose({
     role="alert"
     ref="messageRef"
     :style="cssStyle"
+    @mouseenter="clearTimer"
+    @mouseleave="startTimer"
   >
     <div class="vk-message__content">
       <slot>
