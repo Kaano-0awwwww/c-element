@@ -4,6 +4,7 @@ import type { MessageProps } from './types';
 import RenderVnode from '../Common/RenderVnode';
 import Icon from '../Icons/Icon.vue';
 import { getLastBottomOffset, getLastInstance } from './render';
+
 const props = withDefaults(defineProps<MessageProps>(), {
   type: 'info',
   duration: 3000,
@@ -21,7 +22,10 @@ const lastOffset = computed(() => getLastBottomOffset(props.id)); // 上一个�
 const topOffset = computed(() => props.offset + lastOffset.value); // 这个元素应该使用的 top
 // 这个元素为下一个元素预留的 offset，也就是它最低端 bottom 的 值
 const bottomOffset = computed(() => topOffset.value + height.value);
-
+const cssStyle = computed(() => ({
+  top: topOffset.value + 'px',
+  zIndex: props.zindex,
+}));
 function startTimer() {
   if (props.duration === 0) return;
   setTimeout(() => {
@@ -40,6 +44,7 @@ watch(visible, (newValue) => {
 });
 defineExpose({
   bottomOffset,
+  visible,
 });
 </script>
 <template>
@@ -52,11 +57,11 @@ defineExpose({
     }"
     role="alert"
     ref="messageRef"
-    :style="{ top: `${topOffset}px` }"
+    :style="cssStyle"
   >
     <div class="vk-message__content">
       <slot>
-        {{ offset }} - {{ topOffset }} - {{ height }} - {{ bottomOffset }}
+        <!-- {{ offset }} - {{ topOffset }} - {{ height }} - {{ bottomOffset }} -->
         <RenderVnode :vNode="message" v-if="message" />
       </slot>
     </div>

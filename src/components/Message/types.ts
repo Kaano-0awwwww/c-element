@@ -7,11 +7,13 @@ export interface MessageProps {
   type?: 'success' | 'info' | 'warning' | 'error';
   onDestory: () => void;
   offset?: number;
+  zindex: number;
 }
 export interface MessageContext {
   id: string;
   vnode: VNode;
   props: MessageProps;
   vm: ComponentInternalInstance;
+  destory: () => void;
 }
-export type CreateMessageProps = Omit<MessageProps, 'onDestory' | 'id'>;
+export type CreateMessageProps = Omit<MessageProps, 'onDestory' | 'id' | 'zindex'>;

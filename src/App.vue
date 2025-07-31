@@ -31,7 +31,7 @@ const close = () => {
   tooltipRef.value?.hide();
 };
 onMounted(() => {
-  createMessage({ message: 'hello world', duration: 0, showClose: true });
+  const messageInstance = createMessage({ message: 'hello world', duration: 0, showClose: true });
   createMessage({ message: 'hello world again', duration: 0 });
   if (buttonRef.value) {
     console.log('buttonRef', buttonRef.value.ref);
@@ -39,6 +39,7 @@ onMounted(() => {
   setTimeout(() => {
     openedValue.value = ['a', 'b'];
     size.value = '2xl';
+    // messageInstance.destory();
     // trigger.value = 'hover'
   }, 2000);
 });
