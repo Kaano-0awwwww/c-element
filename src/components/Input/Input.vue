@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import { faL } from '@fortawesome/free-solid-svg-icons';
 import type { InputEmits, InputProps } from './types';
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 defineOptions({
   name: 'VkInput',
@@ -9,8 +10,19 @@ const props = withDefaults(defineProps<InputProps>(), { type: 'text' });
 const emits = defineEmits<InputEmits>();
 
 const innerValue = ref(props.modelValue);
+const isFocus = ref(false);
+const showClear = computed(
+  () => props.clearable && !props.disabled && !!innerValue.value && isFocus.value
+);
 const handleInput = () => {
   emits('update:modelValue', innerValue.value);
+};
+const changeFocus = (val: boolean) => {
+  isFocus.value = val;
+};
+const clear = () => {
+  innerValue.value = '';
+  emits('update:modelValue', '');
 };
 watch(
   () => props.modelValue,
@@ -30,6 +42,7 @@ watch(
       'is-append': $slots.append,
       'is-prefix': $slots.prefix,
       'is-suffix': $slots.suffix,
+      'is-focus': isFocus,
     }"
   >
     <!-- input -->
@@ -49,10 +62,13 @@ watch(
           :disabled="disabled"
           v-model="innerValue"
           @input="handleInput"
+          @focus="changeFocus(true)"
+          @blur="changeFocus(false)"
         />
         <!-- suffix slot -->
-        <span v-if="$slots.suffix" class="vk-input__suffix">
+        <span v-if="$slots.suffix || showClear" class="vk-input__suffix">
           <slot name="suffix" />
+          <Icon icon="circle-xmark" v-if="showClear" class="vk-input__clear" @click="clear" />
         </span>
       </div>
       <!-- append slot -->
@@ -67,6 +83,8 @@ watch(
         :disabled="disabled"
         v-model="innerValue"
         @input="handleInput"
+        @focus="changeFocus(true)"
+        @blur="changeFocus(false)"
       />
     </template>
   </div>
