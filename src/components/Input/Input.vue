@@ -30,6 +30,14 @@ watch(
     innerValue.value = newVal;
   }
 );
+
+const passwordVisible = ref(false);
+const showPasswordArea = computed(
+  () => !!innerValue.value && !props.disabled && props.showPassword
+);
+const togglePasswordVisible = () => {
+  passwordVisible.value = !passwordVisible.value;
+};
 </script>
 <template>
   <div
@@ -58,7 +66,7 @@ watch(
         </span>
         <input
           class="vk-input__inner"
-          :type="type"
+          :type="showPassword ? (passwordVisible ? 'text' : 'password') : type"
           :disabled="disabled"
           v-model="innerValue"
           @input="handleInput"
@@ -66,9 +74,21 @@ watch(
           @blur="changeFocus(false)"
         />
         <!-- suffix slot -->
-        <span v-if="$slots.suffix || showClear" class="vk-input__suffix">
+        <span v-if="$slots.suffix || showClear || showPasswordArea" class="vk-input__suffix">
           <slot name="suffix" />
           <Icon icon="circle-xmark" v-if="showClear" class="vk-input__clear" @click="clear" />
+          <Icon
+            icon="eye"
+            v-if="showPasswordArea && passwordVisible"
+            class="vk-input__password"
+            @click="togglePasswordVisible"
+          />
+          <Icon
+            icon="eye-slash"
+            v-if="showPasswordArea && !passwordVisible"
+            class="vk-input__password"
+            @click="togglePasswordVisible"
+          />
         </span>
       </div>
       <!-- append slot -->
