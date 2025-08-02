@@ -7,10 +7,12 @@
       "@/*": ["./src/*"]
     }
   },
-
   "references": [
     {
       "path": "./tsconfig.config.json"
     }
-  ]
+  ],
+  "vueCompilerOptions": {
+    "plugins": ["vue-macros/volar"]
+  }
 }
