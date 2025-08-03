@@ -8,15 +8,6 @@ export default defineConfig({
   title: 'My Awesome Project',
   description: 'A VitePress Site',
   vite: {
-    plugins: [
-      VueMacros.vite({
-        setupComponent: false,
-        setupSFC: false,
-        plugins: {
-          vueJsx: vueJsx(),
-        },
-      }),
-    ],
     resolve: {
       alias: {
         '@': fileURLToPath(new URL('../../src', import.meta.url)),
@@ -52,6 +43,7 @@ export default defineConfig({
           { text: 'Button', link: '/components/button' },
           { text: 'Input', link: '/components/input' },
           { text: 'Switch', link: '/components/switch' },
+          { text: 'Select', link: '/components/Select' },
         ],
       },
     ],
