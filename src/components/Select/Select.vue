@@ -5,6 +5,8 @@ import type { Ref } from 'vue';
 import Tooltip from '../Tooltip/Tooltip.vue';
 import type { TooltipInstance } from '../Tooltip/types';
 import Input from '../Input/Input.vue';
+import type { InputInstance } from '../Input/types';
+import Icon from '../Icons/Icon.vue';
 
 defineOptions({
   name: 'VkSelect',
@@ -18,6 +20,7 @@ const states = ref<SelectStates>({
   selectedOption: initialOption,
 });
 const tooltipRef = ref() as Ref<TooltipInstance>;
+const inputRef = ref() as Ref<InputInstance>;
 // init option 选项初始化
 function findOption(value: string) {
   const option = props.options.find((ita) => ita.value === value);
@@ -49,6 +52,7 @@ function controlDropdown(show: boolean) {
   show ? tooltipRef.value.show() : tooltipRef.value.hide();
   isDropdownShow.value = show;
   emits('visible-change', show);
+  // console.log('controlDropdown', isDropdownShow.value);
 }
 
 function toggleDropdown() {
@@ -63,12 +67,28 @@ function itemSelect(e: SelectOption) {
   emits('change', e.value);
   emits('update:modelValue', e.value);
   controlDropdown(false);
+  inputRef.value.ref.focus();
 }
 </script>
 <template>
   <div class="vk-select" :class="{ 'is-disabled': disabled }" @click="toggleDropdown">
-    <Tooltip ref="tooltipRef" placement="bottom-start" manual :popper-options="popperOptions">
-      <Input v-model="states.inputValue" :disabled="disabled" :placeholder="placeholder"></Input>
+    <Tooltip
+      ref="tooltipRef"
+      placement="bottom-start"
+      manual
+      :popper-options="popperOptions"
+      @click-outside="controlDropdown(false)"
+    >
+      <Input
+        ref="inputRef"
+        v-model="states.inputValue"
+        :disabled="disabled"
+        :placeholder="placeholder"
+      >
+        <template #suffix>
+          <Icon icon="angle-down" class="header-angle" :class="{ 'is-active': isDropdownShow }" />
+        </template>
+      </Input>
 
       <template #content>
         <ul class="vk-select__menu">

@@ -14,6 +14,18 @@
   .vk-tooltip .vk-tooltip__popper {
     padding: 0;
   }
+  .vk-input.is-focus .vk-input__wrapper {
+    box-shadow: 0 0 0 1px var(--vk-select-input-focus-border-color) inset !important;
+  }
+  .vk-input {
+    .header-angle {
+      transition: transform var(--vk-transition-duration);
+      &.is-active {
+        transform: rotate(180deg);
+      }
+    }
+  }
+
   .vk-input__inner {
     cursor: pointer;
   }

@@ -71,9 +71,8 @@ if (!props.manual) {
   attachEvents();
 }
 useClickOutside(tooltipRef, () => {
-  if (props.trigger === 'click' && isOpen.value && !props.manual) {
-    hide();
-  }
+  if (props.trigger === 'click' && isOpen.value && !props.manual) hide();
+  if (isOpen.value) emits('click-outside', true); // 手动模式下 向外传递
 });
 watch(
   () => props.manual,
