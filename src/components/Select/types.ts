@@ -19,3 +19,7 @@ export interface SelectEmits {
   (e: 'update:modelValue', value: string): void;
   (e: 'visible-change', value: boolean): void;
 }
+export interface SelectStates {
+  inputValue: string;
+  selectedOption: null | SelectOption;
+}
