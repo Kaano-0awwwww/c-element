@@ -25,6 +25,26 @@ function findOption(value: string) {
 }
 // 选择下拉模块
 const isDropdownShow = ref(false);
+const popperOptions: any = {
+  modifiers: [
+    {
+      name: 'offset',
+      options: {
+        offset: [0, 9],
+      },
+    },
+    {
+      name: 'sameWidth',
+      enabled: true,
+      fn: ({ state }: { state: any }) => {
+        state.styles.popper.width = `${state.rects.reference.width}px`;
+      },
+      phase: 'beforeWrite',
+      requires: ['computeStyles'],
+    },
+  ],
+};
+
 function controlDropdown(show: boolean) {
   show ? tooltipRef.value.show() : tooltipRef.value.hide();
   isDropdownShow.value = show;
@@ -47,7 +67,7 @@ function itemSelect(e: SelectOption) {
 </script>
 <template>
   <div class="vk-select" :class="{ 'is-disabled': disabled }" @click="toggleDropdown">
-    <Tooltip ref="tooltipRef" placement="bottom-start" manual>
+    <Tooltip ref="tooltipRef" placement="bottom-start" manual :popper-options="popperOptions">
       <Input v-model="states.inputValue" :disabled="disabled" :placeholder="placeholder"></Input>
 
       <template #content>
