@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { SelectProps, SelectEmits, SelectStates, SelectOption } from './types';
-import { ref, defineEmits, defineProps, defineOptions } from 'vue';
+import { ref, defineEmits, defineProps, defineOptions, computed } from 'vue';
 import type { Ref } from 'vue';
 import Tooltip from '../Tooltip/Tooltip.vue';
 import type { TooltipInstance } from '../Tooltip/types';
@@ -18,9 +18,11 @@ const initialOption = findOption(props.modelValue);
 const states = ref<SelectStates>({
   inputValue: initialOption?.label ?? '',
   selectedOption: initialOption,
+  mouseHover: false,
 });
 const tooltipRef = ref() as Ref<TooltipInstance>;
 const inputRef = ref() as Ref<InputInstance>;
+
 // init option 选项初始化
 function findOption(value: string) {
   const option = props.options.find((ita) => ita.value === value);
@@ -69,9 +71,31 @@ function itemSelect(e: SelectOption) {
   controlDropdown(false);
   inputRef.value.ref.focus();
 }
+
+// clear清空模块
+const showClearIcon = computed(
+  () => props.clearable && states.value.mouseHover && states.value.inputValue.trim()
+);
+
+function onClear() {
+  states.value.inputValue = '';
+  states.value.selectedOption = null;
+  emits('clear');
+  emits('change', '');
+  emits('update:modelValue', '');
+}
+function NOOP() {
+  return;
+}
 </script>
 <template>
-  <div class="vk-select" :class="{ 'is-disabled': disabled }" @click="toggleDropdown">
+  <div
+    class="vk-select"
+    :class="{ 'is-disabled': disabled }"
+    @click="toggleDropdown"
+    @mouseenter="() => (states.mouseHover = true)"
+    @mouseleave="() => (states.mouseHover = false)"
+  >
     <Tooltip
       ref="tooltipRef"
       placement="bottom-start"
@@ -86,7 +110,19 @@ function itemSelect(e: SelectOption) {
         :placeholder="placeholder"
       >
         <template #suffix>
-          <Icon icon="angle-down" class="header-angle" :class="{ 'is-active': isDropdownShow }" />
+          <Icon
+            v-if="showClearIcon"
+            icon="circle-xmark"
+            class="vk-input__clear"
+            @click.stop="onClear"
+            @click.prevent="NOOP"
+          />
+          <Icon
+            v-else
+            icon="angle-down"
+            class="header-angle"
+            :class="{ 'is-active': isDropdownShow }"
+          />
         </template>
       </Input>
 
