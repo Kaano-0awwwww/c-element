@@ -1,12 +1,14 @@
 <script lang="ts" setup>
 import type { SelectProps, SelectEmits, SelectStates, SelectOption } from './types';
-import { ref, defineEmits, defineProps, defineOptions, computed } from 'vue';
+import { ref, defineEmits, defineProps, defineOptions, computed, watch } from 'vue';
 import type { Ref } from 'vue';
 import Tooltip from '../Tooltip/Tooltip.vue';
 import type { TooltipInstance } from '../Tooltip/types';
 import Input from '../Input/Input.vue';
 import type { InputInstance } from '../Input/types';
 import Icon from '../Icons/Icon.vue';
+import RenderVnode from '../Common/RenderVnode';
+import { isFunction } from 'lodash-es';
 
 defineOptions({
   name: 'VkSelect',
@@ -51,7 +53,22 @@ const popperOptions: any = {
 };
 
 function controlDropdown(show: boolean) {
-  show ? tooltipRef.value.show() : tooltipRef.value.hide();
+  if (show) {
+    if (props.filterable && states.value.selectedOption) {
+      // filter模式 清除之前的input
+      states.value.inputValue = '';
+    }
+    // 进行一次默认选项的生成
+    if (props.filterable) generateFilterOptions(states.value.inputValue);
+    tooltipRef.value.show();
+  } else {
+    tooltipRef.value.hide();
+    // filter模式下 回显input值
+    if (props.filterable)
+      states.value.inputValue = states.value.selectedOption
+        ? states.value.selectedOption.label
+        : '';
+  }
   isDropdownShow.value = show;
   emits('visible-change', show);
   // console.log('controlDropdown', isDropdownShow.value);
@@ -70,6 +87,7 @@ function itemSelect(e: SelectOption) {
   emits('update:modelValue', e.value);
   controlDropdown(false);
   inputRef.value.ref.focus();
+  states.value.mouseHover = false;
 }
 
 // clear清空模块
@@ -84,6 +102,35 @@ function onClear() {
   emits('change', '');
   emits('update:modelValue', '');
 }
+
+// 选项筛选模块
+const filterOptions = ref(props.options);
+const filteredPlaceholder = computed(() =>
+  props.filterable && states.value.selectedOption && isDropdownShow.value
+    ? states.value.selectedOption.label
+    : props.placeholder
+);
+watch(
+  () => props.options,
+  (newOptions) => {
+    filterOptions.value = newOptions;
+  }
+);
+
+function generateFilterOptions(searchValue: string) {
+  if (!props.filterable) return;
+  if (props.filterMethod && isFunction(props.filterMethod)) {
+    filterOptions.value = props.filterMethod(searchValue);
+  } else {
+    filterOptions.value = props.options.filter((item) => item.label.includes(searchValue));
+  }
+}
+
+function onFilter() {
+  generateFilterOptions(states.value.inputValue);
+  // console.log(states.value.inputValue);
+}
+
 function NOOP() {
   return;
 }
@@ -107,7 +154,9 @@ function NOOP() {
         ref="inputRef"
         v-model="states.inputValue"
         :disabled="disabled"
-        :placeholder="placeholder"
+        :placeholder="filteredPlaceholder"
+        :readonly="!filterable || !isDropdownShow"
+        @input="onFilter"
       >
         <template #suffix>
           <Icon
@@ -128,7 +177,7 @@ function NOOP() {
 
       <template #content>
         <ul class="vk-select__menu">
-          <template v-for="(item, index) in options" :key="index">
+          <template v-for="(item, index) in filterOptions" :key="index">
             <li
               class="vk-select__menu-item"
               :class="{
@@ -138,8 +187,7 @@ function NOOP() {
               :id="`select-item-${item.value}`"
               @click.stop="itemSelect(item)"
             >
-              {{ item.label }}
-              <span v-if="states.selectedOption?.value === item.value"> Selected! </span>
+              <RenderVnode :vNode="renderLabel ? renderLabel(item) : item.label" />
             </li>
           </template>
         </ul>
