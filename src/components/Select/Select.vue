@@ -8,12 +8,14 @@ import Input from '../Input/Input.vue';
 import type { InputInstance } from '../Input/types';
 import Icon from '../Icons/Icon.vue';
 import RenderVnode from '../Common/RenderVnode';
-import { isFunction } from 'lodash-es';
+import { isFunction, debounce } from 'lodash-es';
 
 defineOptions({
   name: 'VkSelect',
 });
-const props = defineProps<SelectProps>();
+const props = withDefaults(defineProps<SelectProps>(), {
+  options: () => [],
+});
 const emits = defineEmits<SelectEmits>();
 
 const initialOption = findOption(props.modelValue);
@@ -21,6 +23,7 @@ const states = ref<SelectStates>({
   inputValue: initialOption?.label ?? '',
   selectedOption: initialOption,
   mouseHover: false,
+  loading: false,
 });
 const tooltipRef = ref() as Ref<TooltipInstance>;
 const inputRef = ref() as Ref<InputInstance>;
@@ -117,17 +120,28 @@ watch(
   }
 );
 
-function generateFilterOptions(searchValue: string) {
+async function generateFilterOptions(searchValue: string) {
   if (!props.filterable) return;
   if (props.filterMethod && isFunction(props.filterMethod)) {
     filterOptions.value = props.filterMethod(searchValue);
+  } else if (props.remote && props.remoteMethod && isFunction(props.remoteMethod)) {
+    // 远程搜索
+    try {
+      states.value.loading = true;
+      filterOptions.value = await props.remoteMethod(searchValue);
+    } catch (e) {
+      console.error(e);
+      filterOptions.value = [];
+    } finally {
+      states.value.loading = false;
+    }
   } else {
     filterOptions.value = props.options.filter((item) => item.label.includes(searchValue));
   }
 }
-
+const timeout = computed(() => (props.remote ? 300 : 0)); // 默认定时器时间
 function onFilter() {
-  generateFilterOptions(states.value.inputValue);
+  debounce(() => generateFilterOptions(states.value.inputValue), timeout.value); // 防抖处理
   // console.log(states.value.inputValue);
 }
 
@@ -176,7 +190,11 @@ function NOOP() {
       </Input>
 
       <template #content>
-        <ul class="vk-select__menu">
+        <div class="vk-select__loading" v-if="states.loading"><Icon icon="spinner" spin /></div>
+        <div class="vk-select__nodata" v-else-if="filterable && filterOptions.length === 0">
+          no matching data
+        </div>
+        <ul class="vk-select__menu" v-else>
           <template v-for="(item, index) in filterOptions" :key="index">
             <li
               class="vk-select__menu-item"

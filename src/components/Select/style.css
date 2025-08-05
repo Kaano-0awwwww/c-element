@@ -29,6 +29,14 @@
   .vk-input__inner {
     cursor: pointer;
   }
+  .vk-select__nodata,
+  .vk-select__loading {
+    padding: 10px 0;
+    margin: 0;
+    text-align: center;
+    color: var(--vk-text-color-secondary);
+    font-size: var(--vk-select-font-size);
+  }
   .vk-select__menu {
     list-style: none;
     margin: 6px 0;

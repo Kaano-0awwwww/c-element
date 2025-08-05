@@ -6,6 +6,7 @@ export interface SelectOption {
 }
 export type RenderLabelFunc = (option: SelectOption) => VNode;
 export type CustomFilterFunc = (value: string) => SelectOption[];
+export type CustomFilterRemoteFunc = (value: string) => Promise<SelectOption[]>;
 export interface SelectProps {
   // v-model
   modelValue: string;
@@ -18,6 +19,8 @@ export interface SelectProps {
   renderLabel?: RenderLabelFunc;
   filterable?: boolean;
   filterMethod?: CustomFilterFunc;
+  remote?: boolean;
+  remoteMethod?: CustomFilterRemoteFunc;
 }
 
 export interface SelectEmits {
@@ -30,4 +33,5 @@ export interface SelectStates {
   inputValue: string;
   selectedOption: null | SelectOption;
   mouseHover: boolean;
+  loading: boolean;
 }
