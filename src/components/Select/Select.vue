@@ -24,6 +24,7 @@ const states = ref<SelectStates>({
   selectedOption: initialOption,
   mouseHover: false,
   loading: false,
+  highlightIndex: -1,
 });
 const tooltipRef = ref() as Ref<TooltipInstance>;
 const inputRef = ref() as Ref<InputInstance>;
@@ -75,6 +76,7 @@ function controlDropdown(show: boolean) {
   isDropdownShow.value = show;
   emits('visible-change', show);
   // console.log('controlDropdown', isDropdownShow.value);
+  states.value.highlightIndex = -1;
 }
 
 function toggleDropdown() {
@@ -138,11 +140,64 @@ async function generateFilterOptions(searchValue: string) {
   } else {
     filterOptions.value = props.options.filter((item) => item.label.includes(searchValue));
   }
+  states.value.highlightIndex = -1;
 }
 const timeout = computed(() => (props.remote ? 300 : 0)); // 默认定时器时间
+
 function onFilter() {
-  debounce(() => generateFilterOptions(states.value.inputValue), timeout.value); // 防抖处理
-  // console.log(states.value.inputValue);
+  generateFilterOptions(states.value.inputValue);
+}
+// 防抖
+const debounceFilter = debounce(() => {
+  onFilter();
+}, timeout.value);
+
+// 键盘事件
+function handleKeydown(e: KeyboardEvent) {
+  switch (e.key) {
+    case 'Enter': {
+      if (!isDropdownShow.value) {
+        toggleDropdown();
+        break;
+      } else {
+        states.value.highlightIndex !== -1 && filterOptions.value[states.value.highlightIndex]
+          ? itemSelect(filterOptions.value[states.value.highlightIndex])
+          : controlDropdown(false);
+      }
+      break;
+    }
+    case 'Escape': {
+      if (isDropdownShow.value) controlDropdown(false);
+      break;
+    }
+    case 'ArrowUp': {
+      e.preventDefault();
+      if (!filterOptions.value.length) break;
+      if (states.value.highlightIndex === -1 || states.value.highlightIndex === 0) {
+        // 当前无hover或hover第一项 向上循环至最后一项
+        states.value.highlightIndex = filterOptions.value.length - 1;
+      } else {
+        // move up
+        states.value.highlightIndex--;
+      }
+      break;
+    }
+    case 'ArrowDown': {
+      e.preventDefault();
+      if (!filterOptions.value.length) break;
+      if (
+        states.value.highlightIndex === -1 ||
+        states.value.highlightIndex === filterOptions.value.length - 1
+      ) {
+        // 当前无hover或hover第一项 向下至第一项
+        states.value.highlightIndex = 0;
+      } else {
+        // move up
+        states.value.highlightIndex++;
+      }
+      break;
+    }
+  }
 }
 
 function NOOP() {
@@ -170,7 +225,8 @@ function NOOP() {
         :disabled="disabled"
         :placeholder="filteredPlaceholder"
         :readonly="!filterable || !isDropdownShow"
-        @input="onFilter"
+        @input="debounceFilter"
+        @keydown="handleKeydown"
       >
         <template #suffix>
           <Icon
@@ -201,6 +257,7 @@ function NOOP() {
               :class="{
                 'is-disabled': item.disabled,
                 'is-selected': states.selectedOption?.value === item.value,
+                'is-highlighted': states.highlightIndex === index,
               }"
               :id="`select-item-${item.value}`"
               @click.stop="itemSelect(item)"

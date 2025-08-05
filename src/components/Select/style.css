@@ -70,5 +70,8 @@
         background-color: transparent;
       }
     }
+    &.is-highlighted {
+      background-color: var(--vk-select-item-hover-bg-color);
+    }
   }
 }
