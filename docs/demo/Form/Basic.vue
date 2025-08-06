@@ -11,8 +11,8 @@ const model = reactive({
   password: ''
 });
 const rules = {
-  email: [{ type: 'string', required: true, trigger: 'blur' } ],
-  password: [{ type: 'string', required: true, trigger: 'blur' }],
+  email: [{ type: 'email', required: true, trigger: 'blur' } ],
+  password: [{ type: 'string', required: true, trigger: 'blur', min: 3, max: 5 }],
 };
 
 </script>
@@ -20,14 +20,14 @@ const rules = {
 <template>
 <div>
   <Form :model="model" :rules="rules">
-    <FormItem label="the email">
+    <FormItem label="the email" prop="email">
       <Input v-model="model.email"/>
     </FormItem>
-    <FormItem label="the password">
+    <FormItem label="the password" prop="password">
       <template #label="{ label }">
         <Button>{{label}}</Button>
       </template>
-      <Input type="password" v-model="model.password"/>
+      <Input type="password" v-model="model.password" />
     </FormItem>
     <div>
       <Button type="primary">Submit</Button>
