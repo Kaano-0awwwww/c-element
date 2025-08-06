@@ -19,7 +19,7 @@ const inputRef = ref() as Ref<HTMLInputElement>;
 // 表单验证
 const formItemContext = inject(FormItemContextKey);
 function runValidation(trigger?: string) {
-  formItemContext?.validate(trigger);
+  formItemContext?.validate(trigger).catch((e: any) => console.log(e.errors));
 }
 
 const showClear = computed(

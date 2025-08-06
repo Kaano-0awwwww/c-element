@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { FormItemContext, FormProps, FormValidateFailure, FormInstance } from './types';
-import { FormContextKey } from './types';
+import { formContextKey } from './types';
 import { provide } from 'vue';
 import type { ValidateFieldsError } from 'async-validator';
 
@@ -48,7 +48,7 @@ function clearValidate(keys: string[] = []) {
   filterArr.forEach((field) => field.clearValidate());
 }
 
-provide(FormContextKey, {
+provide(formContextKey, {
   ...props,
   addField,
   removeField,
@@ -62,6 +62,5 @@ defineExpose<FormInstance>({
 <template>
   <form class="vk-form">
     <slot />
-    <button @click.prevent="validate">Validate All</button>
   </form>
 </template>

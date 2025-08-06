@@ -1,7 +1,13 @@
 <script setup lang="ts">
-import type { FormItemProps, FormValidateFailure, FormItemContext } from './types';
+import type {
+  FormItemProps,
+  FormValidateFailure,
+  FormItemContext,
+  ValidateStatusProp,
+  FormItemInstance,
+} from './types';
 import { computed, inject, onMounted, onUnmounted, provide, ref } from 'vue';
-import { FormContextKey, FormItemContextKey } from './types';
+import { formContextKey, formItemContextKey } from './types';
 import { isNil } from 'lodash-es';
 import Schema from 'async-validator';
 
@@ -9,7 +15,7 @@ defineOptions({
   name: 'VkFormItem',
 });
 const props = defineProps<FormItemProps>();
-const formContext = inject(FormContextKey);
+const formContext = inject(formContextKey);
 let initialValue: any = null; // 存放初始值
 
 onMounted(() => {
@@ -20,7 +26,7 @@ onMounted(() => {
 });
 onUnmounted(() => formContext?.removeField(context));
 
-const validateStatus = ref({
+const validateStatus: ValidateStatusProp = ref({
   state: 'init',
   errorMsg: '',
   loading: false,
@@ -33,6 +39,7 @@ const itemRules = computed(() => {
   const rules = formContext?.rules;
   return rules && props.prop && !isNil(rules[props.prop]) ? rules[props.prop] : [];
 });
+const isRequired = computed(() => itemRules.value.some((ita) => ita.required));
 
 function getTriggeredRules(trigger?: string) {
   const rules = itemRules.value;
@@ -44,7 +51,7 @@ function getTriggeredRules(trigger?: string) {
   } else return [];
 }
 
-function validate(trigger?: string) {
+async function validate(trigger?: string) {
   const modelName = props.prop;
   const triggeredRules = getTriggeredRules(trigger);
   if (triggeredRules.length === 0) {
@@ -96,7 +103,14 @@ const context: FormItemContext = {
   clearValidate,
   resetField,
 };
-provide(FormItemContextKey, context);
+provide(formItemContextKey, context);
+
+defineExpose<FormItemInstance>({
+  validate,
+  resetField,
+  clearValidate,
+  validateStatus,
+});
 </script>
 <template>
   <div
@@ -105,6 +119,7 @@ provide(FormItemContextKey, context);
       'is-error': validateStatus.state === 'error',
       'is-success': validateStatus.state === 'success',
       'is-loading': validateStatus.loading,
+      'is-required': isRequired,
     }"
   >
     <label class="vk-form-item__label">
@@ -118,6 +133,5 @@ provide(FormItemContextKey, context);
         {{ validateStatus.errorMsg }}
       </div>
     </div>
-    {{ innerValue }} -- {{ itemRules }}
   </div>
 </template>
