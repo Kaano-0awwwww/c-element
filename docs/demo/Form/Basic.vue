@@ -9,13 +9,15 @@ import Button from '@/components/Button/Button.vue';
 const formRef = ref();
 const model = reactive({
   email: '123',
-  password: '12',
-  test: ''
+  password: '',
+  confirmPwd: ''
 });
 const rules = {
   email: [{ type: 'email', required: true, trigger: 'blur' } ],
   password: [{ type: 'string', required: true, trigger: 'blur', min: 3, max: 5 }],
-  test: [{ type: 'string', required: true, trigger: 'blur' } ],
+  confirmPwd: [{ type: 'string', required: true, trigger: 'blur' }, {
+    validator: (rule, value) => value === model.password, trigger: 'blur', message: '两个密码必须相同'
+  } ],
 };
 
 const submit = async () => {
@@ -39,6 +41,9 @@ const reset = () => {
     </FormItem>
     <FormItem label="the password" prop="password">
       <Input type="password" v-model="model.password" />
+    </FormItem>
+    <FormItem prop="confirmPwd" label="confirm password">
+      <Input v-model="model.confirmPwd" type="password" />
     </FormItem>
     <div :style="{textAlign: 'center'}">
       <Button type="primary" @click.prevent="submit">Submit</Button>
