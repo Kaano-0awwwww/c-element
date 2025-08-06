@@ -25,12 +25,26 @@ const itemRules = computed(() => {
   return rules && props.prop && !isNil(rules[props.prop]) ? rules[props.prop] : [];
 });
 
-function validate() {
+function getTriggeredRules(trigger?: string) {
+  const rules = itemRules.value;
+  if (rules) {
+    return rules.filter((ita) => {
+      if (!ita.trigger && !trigger) return true;
+      return ita.trigger && ita.trigger === trigger;
+    });
+  } else return [];
+}
+
+function validate(trigger?: string) {
   const modelName = props.prop;
+  const triggeredRules = getTriggeredRules(trigger);
+  if (triggeredRules.length === 0) {
+    return true;
+  }
   if (!modelName) return;
 
   const validator = new Schema({
-    [modelName]: itemRules.value,
+    [modelName]: triggeredRules,
   });
   validateStatus.value.loading = true;
   validator
@@ -75,6 +89,6 @@ provide(FormItemContextKey, context);
       </div>
     </div>
     {{ innerValue }} -- {{ itemRules }}
-    <button @click.prevent="validate">Validate</button>
+    <button @click.prevent="validate()">Validate</button>
   </div>
 </template>

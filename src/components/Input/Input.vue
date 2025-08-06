@@ -18,8 +18,8 @@ const passwordVisible = ref(false);
 const inputRef = ref() as Ref<HTMLInputElement>;
 // 表单验证
 const formItemContext = inject(FormItemContextKey);
-function runValidation() {
-  formItemContext?.validate();
+function runValidation(trigger?: string) {
+  formItemContext?.validate(trigger);
 }
 
 const showClear = computed(
@@ -39,9 +39,11 @@ const keepFocus = async () => {
 const handleInput = () => {
   emits('update:modelValue', innerValue.value);
   emits('input', innerValue.value);
+  runValidation('input');
 };
 const handleChange = () => {
   emits('change', innerValue.value);
+  runValidation('change');
 };
 const handleFocus = (event: FocusEvent) => {
   isFocus.value = true;
@@ -51,7 +53,7 @@ const handleBlur = (event: FocusEvent) => {
   console.log('blur triggered');
   isFocus.value = false;
   emits('blur', event);
-  runValidation();
+  runValidation('blur');
 };
 const clear = () => {
   console.log('clear triggered');
