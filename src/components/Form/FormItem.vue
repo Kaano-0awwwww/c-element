@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { FormItemProps, FormValidateFailure, FormItemContext } from './types';
-import { computed, inject, provide, ref } from 'vue';
+import { computed, inject, onMounted, onUnmounted, provide, ref } from 'vue';
 import { FormContextKey, FormItemContextKey } from './types';
 import { isNil } from 'lodash-es';
 import Schema from 'async-validator';
@@ -10,6 +10,15 @@ defineOptions({
 });
 const props = defineProps<FormItemProps>();
 const formContext = inject(FormContextKey);
+let initialValue: any = null; // 存放初始值
+
+onMounted(() => {
+  if (props.prop) {
+    formContext?.addField(context);
+    initialValue = innerValue.value;
+  }
+});
+onUnmounted(() => formContext?.removeField(context));
 
 const validateStatus = ref({
   state: 'init',
@@ -47,7 +56,7 @@ function validate(trigger?: string) {
     [modelName]: triggeredRules,
   });
   validateStatus.value.loading = true;
-  validator
+  return validator
     .validate({ [modelName]: innerValue.value })
     .then(() => {
       // console.log('pass!');
@@ -58,13 +67,34 @@ function validate(trigger?: string) {
       const { errors } = e;
       validateStatus.value.state = 'error';
       validateStatus.value.errorMsg = errors && errors.length ? errors[0].message || '' : '';
+      return Promise.reject(e);
     })
     .finally(() => {
       validateStatus.value.loading = false;
     });
 }
+
+function clearValidate() {
+  validateStatus.value = {
+    state: 'init',
+    errorMsg: '',
+    loading: false,
+  };
+}
+
+function resetField() {
+  clearValidate();
+  const model = formContext?.model;
+  if (model && props.prop && !isNil(model[props.prop])) {
+    model[props.prop] = initialValue;
+  }
+}
+
 const context: FormItemContext = {
   validate,
+  prop: props.prop || '',
+  clearValidate,
+  resetField,
 };
 provide(FormItemContextKey, context);
 </script>
@@ -89,6 +119,5 @@ provide(FormItemContextKey, context);
       </div>
     </div>
     {{ innerValue }} -- {{ itemRules }}
-    <button @click.prevent="validate()">Validate</button>
   </div>
 </template>
